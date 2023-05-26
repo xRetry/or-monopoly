@@ -20,8 +20,10 @@ document.addEventListener('DOMContentLoaded', function() {
     })
 
     createTransMatrix();
+    //console.log(v.eig(v.array(gMatrix.toArray())));
     createFieldProbs(1);
     createPlot();
+
 })
 
 /**
