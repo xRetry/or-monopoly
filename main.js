@@ -3,6 +3,7 @@ const SIZE = 40;
 var gMatrix;
 /** @type {Array<number>} */
 var gProbs;
+/** @type {ApexCharts} */
 var gChart;
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -18,8 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
         updatePlot();
     })
 
-    let diceProbs = createDiceProbs(6, 6);
-    createTransMatrix(diceProbs);
+    createTransMatrix();
     createFieldProbs(1);
     createPlot();
 })
@@ -40,14 +40,12 @@ function createDiceProbs(numDice1, numDice2) {
     return probs;
 }
 
-/** 
- * @param {Array<number>} probs
- */
-function createTransMatrix(probs) {
+function createTransMatrix() {
+    let diceProbs = createDiceProbs(6, 6);
     for (let i=0; i<SIZE; i++) {
-        for (let j=0; j<probs.length; j++) {
+        for (let j=0; j<diceProbs.length; j++) {
             const idx = (i+j) % SIZE;
-            gMatrix.set([i, idx], probs[j]);
+            gMatrix.set([i, idx], diceProbs[j]);
         }
     }
 }
@@ -90,28 +88,27 @@ function createSeriesFromProbs() {
 }
 
 function createPlot() {
-    let options = {};
-    options.series = createSeriesFromProbs();
-    options.dataLabels = { enabled: true };
-    options.colors = ["#008FFB"];
-    options.chart = { id: 'board', type: 'heatmap', height: 400, width: 400 };
-    options.tooltip = {
-        enabled: false,
+    let options = {
+        series: createSeriesFromProbs(),
+        dataLabels: { enabled: true },
+        colors: ["#008FFB"],
+        chart: { id: 'board', type: 'heatmap', height: 400, width: 400 },
+        tooltip: {
+            enabled: false,
+        },
+        xaxis: { 
+            labels: { show: false },
+            crosshairs: { show: false },
+            tooltip: { enabled: false },
+        },
+        yaxis: { 
+            labels: { show: false },
+            crosshairs: { show: false },
+            tooltip: { enabled: false },
+        },
     };
-    options.xaxis = { 
-        labels: { show: false },
-        crosshairs: { show: false },
-        tooltip: { enabled: false },
-    };
-    options.yaxis = { 
-        labels: { show: false },
-        crosshairs: { show: false },
-        tooltip: { enabled: false },
-    };
-    console.log(options)
     gChart = new ApexCharts(document.querySelector("#board"), options);
     gChart.render();
-
 }
 
 function updatePlot() {
