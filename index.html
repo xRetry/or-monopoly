@@ -1,15 +1,31 @@
+<!DOCTYPE html>
 <head>
     <script src="main.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.40.0/apexcharts.min.js"></script>
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.40.0/apexcharts.min.css">
 </head>
 <body>
-    <div id="board"></div>
-    <form>
-        <label for="steps">Steps:</label>
-        <input type="text" id="steps" name="steps">
-        <input type="submit" id="calc" value="Calc">
-    </form>
+    <div>
+        <div id="board"></div>
+        <div class="container-input">
+            <form>
+                <div>
+                    <label for="mode-simple">Simple</label>
+                    <input type="radio" id="mode-simple" value="simple" name="mode">
+                </div>
+                <div>
+                    <label for="mode-complex">Complex</label>
+                    <input type="radio" id="mode-complex" value="complex" name="mode">
+                </div>
+                <div>
+                    <label for="steps">Steps:</label>
+                    <input type="text" id="steps" name="steps">
+                </div>
+                <input type="submit" id="calc" value="Calc">
+            </form>
+        </div>
+    </div>
 </body>
 

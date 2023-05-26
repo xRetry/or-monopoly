@@ -50,6 +50,14 @@ function createTransMatrix() {
     }
 }
 
+function appyTransRules() {
+    for (let i=0; i<gMatrix.size()[0]; i++) {
+        gMatrix.set([8, i], 0);
+    }
+    gMatrix.set([8, 0], 1);
+    console.log(gMatrix)
+}
+
 /**
  * @param {number} steps
  */
@@ -90,9 +98,27 @@ function createSeriesFromProbs() {
 function createPlot() {
     let options = {
         series: createSeriesFromProbs(),
-        dataLabels: { enabled: true },
+        dataLabels: { 
+            enabled: true,
+            formatter: function(val) {
+                return Number.parseFloat(val).toFixed(2);
+            }
+        },
+        grid: { show: false },
+        stroke: { show: false },
         colors: ["#008FFB"],
-        chart: { id: 'board', type: 'heatmap', height: 400, width: 400 },
+        chart: { 
+            background: '#fffa',
+            parentHeightOffset: 0,
+            id: 'board', 
+            type: 'heatmap', 
+            height: 600, 
+            width: 600,
+            selection: { enabled: false },
+            toolbar: { show: false },
+            brush: { enabled: false },
+            zoom: { enabled: false },
+        },
         tooltip: {
             enabled: false,
         },
@@ -100,11 +126,15 @@ function createPlot() {
             labels: { show: false },
             crosshairs: { show: false },
             tooltip: { enabled: false },
+            axisTicks: { show: false },
+            axisBorder: { show: false },
         },
         yaxis: { 
             labels: { show: false },
             crosshairs: { show: false },
             tooltip: { enabled: false },
+            axisTicks: { show: false },
+            axisBorder: { show: false },
         },
     };
     gChart = new ApexCharts(document.querySelector("#board"), options);

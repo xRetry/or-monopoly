@@ -1,0 +1,29 @@
+
+body {
+    position: relative;
+    background-color: #5e636e;
+}
+
+.container-input {
+    background-color: #808080;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    height: 455px;
+    width: 457px;
+    transform: translate(-50%, 0);
+    margin-top: 80px;
+}
+
+#board {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, 0);
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    padding: 100px;
+}
