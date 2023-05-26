@@ -1,24 +1,36 @@
+const SIZE = 40;
+/** @type {matn.Matrix} */
+var gMatrix;
+/** @type {Array<number>} */
+var gProbs;
+var gChart;
+
 document.addEventListener('DOMContentLoaded', function() {
-    const size = 40;
-    let probs = createProbs(6, 6, size);
-    let matrix = createTransMatrix(probs, size);
-    //console.log(math.pow(matrix, 1000));
-    let init = math.zeros(size, 1);
-    init.set([0, 0], 1);
-    //console.log(math.dot(matrix, init));
-    //let fieldProbs = 
-    let fieldProbs = math.ones(40).valueOf();
-    createPlot(fieldProbs);
+    gMatrix = math.zeros(SIZE, SIZE);
+    gProbs = new Array(SIZE).fill(0);
+
+    document.querySelector('#calc').addEventListener('click', function(e) {
+        e.preventDefault();
+        const steps = document.querySelector('#steps').value;
+        console.log(steps)
+
+        createFieldProbs(steps)
+        updatePlot();
+    })
+
+    let diceProbs = createDiceProbs(6, 6);
+    createTransMatrix(diceProbs);
+    createFieldProbs(1);
+    createPlot();
 })
 
 /**
  * @param {number} numDice1
  * @param {number} numDice2
- * @param {number} numfields
  * @returns {Array<number>}
  */
-function createProbs(numDice1, numDice2, numFields) {
-    let probs = new Array(numFields).fill(0);
+function createDiceProbs(numDice1, numDice2) {
+    let probs = new Array(SIZE).fill(0);
     for (let i=1; i<numDice1+1; i++) {
         for (let j=1; j<numDice2+1; j++) {
             probs[i+j] += 1/numDice1 * 1/numDice2;
@@ -30,43 +42,56 @@ function createProbs(numDice1, numDice2, numFields) {
 
 /** 
  * @param {Array<number>} probs
- * @param {number} size
- * @returns {math.Matrix} 
  */
-function createTransMatrix(probs, size) {
-    let matrix = math.zeros(size, size);
-    for (let i=0; i<size; i++) {
+function createTransMatrix(probs) {
+    for (let i=0; i<SIZE; i++) {
         for (let j=0; j<probs.length; j++) {
-            const idx = (i+j) % size;
-            matrix.set([i, idx], probs[j]);
+            const idx = (i+j) % SIZE;
+            gMatrix.set([i, idx], probs[j]);
         }
     }
-
-    return matrix;
 }
 
-function createPlot(probs) {
-    let options = { series: [] };
+/**
+ * @param {number} steps
+ */
+function createFieldProbs(steps) {
+    let init = math.zeros(SIZE, 1);
+    init.set([0, 0], 1);
+    const probs = math.multiply(math.transpose(math.pow(gMatrix, steps)), init);
+    gProbs = math.flatten(probs).valueOf();
+}
 
-    options.series.push({ data: new Array(11) });
+/**
+ * @return {Array<{data: Array<number|null>}>}
+ */
+function createSeriesFromProbs() {
+    let series = [];
+    series.push({ data: new Array(11) });
     for (let i=0; i<11; i++) {
-        options.series[0].data[10-i] = probs[i];
+        series[0].data[10-i] = gProbs[i];
     }
 
     for (let i=0; i<9; i++) {
         let row = new Array(11).fill(null);
-        row[0] = probs[11+i];
-        row[10] = probs[18-i];
-        options.series.push({
+        row[0] = gProbs[11+i];
+        row[10] = gProbs[39-i];
+        series.push({
             data: row,
         });
     }
 
-    options.series.push({ data: new Array(11) });
+    series.push({ data: new Array(11) });
     for (let i=0; i<11; i++) {
-        options.series[options.series.length-1].data[i] = probs[10+i];
+        series[series.length-1].data[i] = gProbs[20+i];
     }
 
+    return series;
+}
+
+function createPlot() {
+    let options = {};
+    options.series = createSeriesFromProbs();
     options.dataLabels = { enabled: true };
     options.colors = ["#008FFB"];
     options.chart = { id: 'board', type: 'heatmap', height: 400, width: 400 };
@@ -84,7 +109,12 @@ function createPlot(probs) {
         tooltip: { enabled: false },
     };
     console.log(options)
-    let chart = new ApexCharts(document.querySelector("#board"), options);
-    chart.render();
+    gChart = new ApexCharts(document.querySelector("#board"), options);
+    gChart.render();
 
+}
+
+function updatePlot() {
+    const newSeries = createSeriesFromProbs();
+    gChart.updateSeries(newSeries);
 }
