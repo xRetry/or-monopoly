@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 SIZE = 40
 NUM_DICE1 = 6
@@ -71,6 +72,35 @@ def get_n_step_probs(matrix: np.ndarray, num_steps: int) -> np.ndarray:
     matrix_n_steps = eig_vecs_right @ np.diag(eig_vals**num_steps) @ eig_vecs_left
     return np.real(matrix_n_steps.T @ init)
 
+def plot_matrix(matrix: np.ndarray):
+    plt.figure()
+    plt.imshow(matrix)
+    plt.show() 
+
+def plot_board(probs: np.ndarray):
+    board = np.ones((13, 13)) * np.nan
+
+    board[-1, 1:-1] = probs[:11][::-1]
+    board[-2, 1:-1] = probs[:11][::-1]
+
+    for i in range(9):
+        board[-i-3, :2] = probs[11+i]
+        board[-i-3, -2:] = probs[39-i]
+
+    board[0, 1:-1] = probs[20:31]
+    board[1, 1:-1] = probs[20:31]
+
+    board[-2:, -1] = probs[0]
+    board[-2:, 0] = probs[10]
+    board[:2, 0] = probs[20]
+    board[:2, -1] = probs[30]
+
+    plt.figure()
+    plt.imshow(board)
+    plt.xticks([])
+    plt.yticks([])
+    plt.show()
+
 def main():
     dice_probs = create_dice_probs()
     matrix = create_trans_matrix_simple(dice_probs)
@@ -80,6 +110,10 @@ def main():
     print(probs)
     probs = get_n_step_probs(matrix, 3)
     print(probs)
+
+    #plot_matrix(matrix)
+    probs = np.arange(SIZE)
+    plot_board(probs)
 
 if __name__ == '__main__':
     main()
