@@ -5,7 +5,7 @@ NUM_DICE1 = 6
 NUM_DICE2 = 6
 
 def create_dice_probs() -> np.ndarray:
-    probs = np.zeros(SIZE)
+    probs = np.zeros(NUM_DICE1 + NUM_DICE2 + 1)
     for i in range(1, NUM_DICE1+1):
         for j in range(1, NUM_DICE2+1):
             probs[i+j] += 1/NUM_DICE1 * 1/NUM_DICE2;
@@ -37,15 +37,17 @@ def create_trans_matrix_complex(dice_probs: np.ndarray) -> np.ndarray:
     matrix[22, SIZE] = 1
     matrix[30, SIZE] = 1
 
-    # Stay in jail
-    prob_stay = 1/NUM_DICE1 * 1/NUM_DICE2
-    matrix[SIZE, SIZE+1] = prob_stay
-    matrix[SIZE+1, SIZE+2] = prob_stay
-
     # Leave jail
-    matrix[SIZE, 10] = 1-prob_stay
-    matrix[SIZE+1, 10] = 1-prob_stay
-    matrix[SIZE+2, 10] = 1
+    prob_equal = 1/NUM_DICE1 * 1/NUM_DICE2
+
+    idxs_leave = 10+2*np.arange(1, 7)
+    matrix[SIZE, idxs_leave] = prob_equal
+    matrix[SIZE+1, idxs_leave] = prob_equal
+    matrix[SIZE+2, 10:10+len(dice_probs)] = dice_probs
+
+    # Stay in jail
+    matrix[SIZE, SIZE+1] = 1 - matrix[SIZE, :].sum()
+    matrix[SIZE+1, SIZE+2] = 1 - matrix[SIZE+1, :].sum()
 
     return matrix
 
