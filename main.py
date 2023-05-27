@@ -1,12 +1,14 @@
 import numpy as np
 
 SIZE = 40
+NUM_DICE1 = 6
+NUM_DICE2 = 6
 
-def create_dice_probs(num_dice1: int, num_dice2: int) -> np.ndarray:
+def create_dice_probs() -> np.ndarray:
     probs = np.zeros(SIZE)
-    for i in range(1, num_dice1+1):
-        for j in range(1, num_dice2+1):
-            probs[i+j] += 1/num_dice1 * 1/num_dice2;
+    for i in range(1, NUM_DICE1+1):
+        for j in range(1, NUM_DICE2+1):
+            probs[i+j] += 1/NUM_DICE1 * 1/NUM_DICE2;
 
     return probs;
 
@@ -20,21 +22,41 @@ def create_trans_matrix_simple(dice_probs: np.ndarray) -> np.ndarray:
     return matrix
 
 def create_trans_matrix_complex(dice_probs: np.ndarray) -> np.ndarray:
-    matrix = create_trans_matrix_simple(dice_probs)
+    matrix = np.zeros((SIZE+3, SIZE+3))
+    matrix[:SIZE, :SIZE] = create_trans_matrix_simple(dice_probs)
 
-    matrix[8, :] = np.zeros(SIZE)
-    matrix[8, 0] = 1
+    # Go to start
+    matrix[7, :] = np.zeros(SIZE+3)
+    matrix[7, 0] = 1
+    matrix[17, :] = np.zeros(SIZE+3)
+    matrix[17, 0] = 1
+    matrix[33, :] = np.zeros(SIZE+3)
+    matrix[33, 0] = 1
+
+    # Go to jail
+    matrix[22, SIZE] = 1
+    matrix[30, SIZE] = 1
+
+    # Stay in jail
+    prob_stay = 1/NUM_DICE1 * 1/NUM_DICE2
+    matrix[SIZE, SIZE+1] = prob_stay
+    matrix[SIZE+1, SIZE+2] = prob_stay
+
+    # Leave jail
+    matrix[SIZE, 10] = 1-prob_stay
+    matrix[SIZE+1, 10] = 1-prob_stay
+    matrix[SIZE+2, 10] = 1
 
     return matrix
 
 def get_n_step_probs_power(matrix: np.ndarray, num_steps: int) -> np.ndarray:
-    init = np.zeros(SIZE, dtype=float)
+    init = np.zeros(matrix.shape[1], dtype=float)
     init[0] = 1
 
     return np.linalg.matrix_power(matrix, num_steps).T @ init
 
 def get_n_step_probs(matrix: np.ndarray, num_steps: int) -> np.ndarray:
-    init = np.zeros(SIZE, dtype=float)
+    init = np.zeros(matrix.shape[1], dtype=float)
     init[0] = 1
 
     eig_vals, eig_vecs_right = np.linalg.eig(matrix)
@@ -48,16 +70,14 @@ def get_n_step_probs(matrix: np.ndarray, num_steps: int) -> np.ndarray:
     return np.real(matrix_n_steps.T @ init)
 
 def main():
-    dice_probs = create_dice_probs(6, 6)
+    dice_probs = create_dice_probs()
     matrix = create_trans_matrix_simple(dice_probs)
+    matrix = create_trans_matrix_complex(dice_probs)
 
     probs = get_n_step_probs_power(matrix, 3)
     print(probs)
     probs = get_n_step_probs(matrix, 3)
     print(probs)
-
-
-    
 
 if __name__ == '__main__':
     main()
