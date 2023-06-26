@@ -82,7 +82,7 @@ def plot_matrix(matrix: np.ndarray):
     plt.imshow(matrix)
     plt.show() 
 
-def plot_board(probs: np.ndarray):
+def plot_board(probs: np.ndarray, no_start_and_jail: bool=False):
     board = np.ones((13, 13)) * np.nan
 
     board[-1, 1:-1] = probs[:11][::-1]
@@ -99,6 +99,10 @@ def plot_board(probs: np.ndarray):
     board[-2:, 0] = probs[10]
     board[:2, 0] = probs[20]
     board[:2, -1] = probs[30]
+
+    if no_start_and_jail:
+        board[-2:, :2] = 0
+        board[-2:, -2:] = 0
 
     plt.figure()
     plt.imshow(board)
@@ -125,18 +129,24 @@ def main():
 
     probs = get_n_step_probs(matrix_simple, 1)
     print_field_probs(probs, 'One Step Probs:')
+    plot_board(probs)
 
     probs = get_n_step_probs(matrix_simple, 2)
     print_field_probs(probs, 'Two Step Probs:')
+    plot_board(probs)
 
     probs = get_n_step_probs(matrix_simple, 3)
     print_field_probs(probs, 'Three Step Probs:')
+    plot_board(probs)
 
     probs = get_n_step_probs(matrix_simple, 1000)
     print_field_probs(probs, 'Thousand Step Probs:')
+    plot_board(probs)
 
     probs = get_n_step_probs(matrix_cplx, np.inf)
     print_field_probs(probs, 'Stationary Probs:', True)
+    plot_board(probs)
+    plot_board(probs, True)
 
     idx_sorted = np.argsort(probs)+1
     print('Field with max probability without start and jail:', idx_sorted[-3])
