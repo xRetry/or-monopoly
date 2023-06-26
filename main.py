@@ -125,28 +125,28 @@ def main():
     dice_probs = create_dice_probs()
     matrix_simple = create_trans_matrix_simple(dice_probs)
     matrix_cplx = create_trans_matrix_complex(dice_probs, matrix_simple)
-    #plot_matrix(matrix_cplx)
+    plot_matrix(matrix_cplx)
 
     probs = get_n_step_probs(matrix_simple, 1)
     print_field_probs(probs, 'One Step Probs:')
-    plot_board(probs)
+    #plot_board(probs)
 
     probs = get_n_step_probs(matrix_simple, 2)
     print_field_probs(probs, 'Two Step Probs:')
-    plot_board(probs)
+    #plot_board(probs)
 
     probs = get_n_step_probs(matrix_simple, 3)
     print_field_probs(probs, 'Three Step Probs:')
-    plot_board(probs)
+    #plot_board(probs)
 
     probs = get_n_step_probs(matrix_simple, 1000)
     print_field_probs(probs, 'Thousand Step Probs:')
-    plot_board(probs)
+    #plot_board(probs)
 
     probs = get_n_step_probs(matrix_cplx, np.inf)
     print_field_probs(probs, 'Stationary Probs:', True)
-    plot_board(probs)
-    plot_board(probs, True)
+    #plot_board(probs)
+    #plot_board(probs, True)
 
     idx_sorted = np.argsort(probs)+1
     print('Field with max probability without start and jail:', idx_sorted[-3])
